@@ -1,0 +1,53 @@
+{
+  "name": "Heywood's Hotel",
+  "short_name": "Heywood Hotel",
+  "description": "Book rooms, manage stays, and run the front desk.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4efe6",
+  "theme_color": "#243746",
+  "lang": "en",
+  "categories": ["business", "travel"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Stay",
+      "short_name": "Stays",
+      "url": "./user.html",
+      "description": "Guest bookings and invoices"
+    },
+    {
+      "name": "Front desk",
+      "short_name": "Desk",
+      "url": "./admin.html",
+      "description": "Staff dashboard"
+    }
+  ]
+}

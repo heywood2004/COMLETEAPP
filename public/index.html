@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#243746">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Heywood Hotel">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <title>Heywood's Hotel – Rooms &amp; Reservations</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="main-header">
+  <div class="header-content">
+    <div class="brand">
+      <div class="brand-icon">🏨</div>
+      <div>
+        <h1>Heywood's Hotel</h1>
+        <p>Room Reservation &amp; Booking</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="#gallerySection" class="btn btn-secondary" style="text-decoration:none;">Our Rooms</a>
+      <a href="#loginSection" class="btn btn-primary" style="text-decoration:none;">Sign In</a>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hotel-hero" id="hotelHero">
+  <div class="hero-slideshow" id="heroSlideshow">
+    <div class="hero-slide active" style="background-image:url('images/hotel-hero-1.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('images/hotel-hero-2.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('images/hotel-hero-3.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('images/hotel-hero-4.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('images/hotel-hero-5.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('images/hotel-hero-6.jpg')"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-label">Welcome to your stay</span>
+    <h2>Comfort, Elegance &amp; Exceptional Hospitality</h2>
+    <p>Browse our rooms, compare rates, then sign in to reserve your stay in a few clicks.</p>
+    <div class="hero-actions">
+      <a href="#gallerySection" class="hero-button">Browse Rooms</a>
+      <a href="register.html" class="hero-button secondary">Create an Account</a>
+    </div>
+  </div>
+  <div class="hero-indicators" id="heroIndicators"></div>
+</section>
+
+<main>
+
+  <!-- Public stats strip -->
+  <section class="gallery-stats" id="galleryStats">
+    <div class="gallery-stat">
+      <strong id="pubTotalRooms">—</strong>
+      <span>Total rooms</span>
+    </div>
+    <div class="gallery-stat">
+      <strong id="pubAvailableToday">—</strong>
+      <span>Available today</span>
+    </div>
+    <div class="gallery-stat">
+      <strong id="pubRoomTypes">—</strong>
+      <span>Room categories</span>
+    </div>
+  </section>
+
+  <!-- PUBLIC ROOM GALLERY -->
+  <section class="dashboard-container" id="gallerySection">
+    <div class="section-heading" style="margin-bottom:8px;">
+      <div>
+        <span class="section-label">ACCOMMODATION</span>
+        <h2>Our rooms</h2>
+        <p>Explore room types and rates. Sign in to check full-date availability and book.</p>
+      </div>
+      <div class="gallery-view-toggle">
+        <button type="button" class="btn btn-primary gallery-tab active" data-view="types">By type</button>
+        <button type="button" class="btn btn-secondary gallery-tab" data-view="all">All rooms</button>
+      </div>
+    </div>
+
+    <div class="search-section" style="margin:16px 0;">
+      <div class="search-wrapper" style="max-width:100%;">
+        <span>🔎</span>
+        <input type="search" id="gallerySearch" placeholder="Search by room type or number..." autocomplete="off">
+      </div>
+    </div>
+
+    <div id="galleryLoading" class="empty-state" style="padding:40px;">
+      <div class="loader" style="margin:0 auto 12px;"></div>
+      <p>Loading rooms...</p>
+    </div>
+
+    <div id="galleryTypes" class="room-grid" style="display:none;"></div>
+    <div id="galleryAll" class="room-grid" style="display:none;"></div>
+
+    <div class="gallery-cta card" style="margin-top:28px;text-align:center;">
+      <h3 style="margin:0 0 8px;">Ready to reserve?</h3>
+      <p style="color:#718096;margin:0 0 16px;">Create a free account or sign in to book for your preferred dates.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <a href="#loginSection" class="btn btn-primary">Sign in to book</a>
+        <a href="register.html" class="btn btn-secondary">Register</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section class="dashboard-container" style="padding-top:0;">
+    <div id="loginSection" class="card login-card" style="max-width:480px;margin:0 auto 40px;">
+      <h2>Sign in</h2>
+      <p>Access your bookings or the admin dashboard.</p>
+
+      <div class="login-role-selection">
+        <p><strong>Login as:</strong></p>
+        <div class="role-options">
+          <label><input type="radio" name="loginAs" value="user" checked> Guest</label>
+          <label><input type="radio" name="loginAs" value="admin"> Staff / Admin</label>
+        </div>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label for="loginEmail">Email address</label>
+          <input type="email" id="loginEmail" name="email" required autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" name="password" required autocomplete="current-password" placeholder="Your password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-large" id="loginButton" style="width:100%;">Login</button>
+      </form>
+
+      <div id="loginMessage" class="message" style="display:none;margin-top:14px;"></div>
+
+      <p style="margin-top:18px;text-align:center;font-size:14px;">
+        New guest?
+        <a href="register.html">Create an account</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<div id="loading" class="loading-overlay" style="display:none;" aria-hidden="true">
+  <div class="loader"></div>
+  <p>Please wait...</p>
+</div>
+
+<footer class="main-footer">
+  <p>Heywood's Hotel &copy; 2026 · All rights reserved</p>
+</footer>
+
+<script src="js/utils.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ----- Hero slideshow -----
+  const slides = document.querySelectorAll(".hero-slide");
+  const indicators = document.getElementById("heroIndicators");
+  let slideIndex = 0;
+
+  if (indicators && slides.length) {
+    slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "hero-dot" + (i === 0 ? " active" : "");
+      dot.setAttribute("aria-label", "Slide " + (i + 1));
+      dot.addEventListener("click", () => goSlide(i));
+      indicators.appendChild(dot);
+    });
+  }
+
+  function goSlide(i) {
+    slides[slideIndex]?.classList.remove("active");
+    indicators?.children[slideIndex]?.classList.remove("active");
+    slideIndex = i;
+    slides[slideIndex]?.classList.add("active");
+    indicators?.children[slideIndex]?.classList.add("active");
+  }
+
+  if (slides.length > 1) {
+    setInterval(() => goSlide((slideIndex + 1) % slides.length), 5000);
+  }
+
+  // ----- Public gallery -----
+  let galleryData = { types: [], rooms: [] };
+  let currentView = "types";
+
+  const TYPE_IMAGES = {
+    single: "images/hotel-hero-1.jpg",
+    double: "images/hotel-hero-2.jpg",
+    twin: "images/hotel-hero-3.jpg",
+    deluxe: "images/hotel-hero-4.jpg",
+    executive: "images/hotel-hero-5.jpg",
+    presidential: "images/hotel-hero-6.jpg",
+    suite: "images/hotel-hero-4.jpg"
+  };
+
+  function typeImage(type) {
+    return TYPE_IMAGES[String(type || "").toLowerCase()] || "images/hotel-hero-1.jpg";
+  }
+
+  function statusBadge(status) {
+    const s = String(status || "available").toLowerCase();
+    if (s === "available") return '<span class="badge available">Available</span>';
+    if (s === "booked") return '<span class="badge booked">Occupied</span>';
+    if (s === "out_of_order") return '<span class="badge hk-out_of_order">Out of order</span>';
+    if (s === "maintenance") return '<span class="badge hk-dirty">Being prepared</span>';
+    return '<span class="badge">' + escapeHtml(s) + "</span>";
+  }
+
+  async function loadGallery() {
+    const loading = document.getElementById("galleryLoading");
+    try {
+      const result = await apiFetch("public_rooms.php");
+      const data = unwrapData(result) || {};
+      galleryData.types = Array.isArray(data.types) ? data.types : [];
+      galleryData.rooms = Array.isArray(data.rooms) ? data.rooms : [];
+
+      const stats = data.stats || {};
+      setText("pubTotalRooms", stats.total_rooms ?? galleryData.rooms.length);
+      setText("pubAvailableToday", stats.available_today ?? "—");
+      setText("pubRoomTypes", stats.room_types ?? galleryData.types.length);
+
+      if (loading) loading.style.display = "none";
+      renderGallery();
+    } catch (err) {
+      if (loading) {
+        loading.innerHTML =
+          '<div class="empty-icon">🏨</div><h3>Could not load rooms</h3><p>' +
+          escapeHtml(err.message) +
+          "</p>";
+      }
+    }
+  }
+
+  function renderGallery() {
+    const q = (document.getElementById("gallerySearch")?.value || "").trim().toLowerCase();
+    const typesEl = document.getElementById("galleryTypes");
+    const allEl = document.getElementById("galleryAll");
+    if (!typesEl || !allEl) return;
+
+    if (currentView === "types") {
+      typesEl.style.display = "grid";
+      allEl.style.display = "none";
+      let types = galleryData.types.slice();
+      if (q) {
+        types = types.filter((t) => String(t.room_type || "").toLowerCase().includes(q));
+      }
+      if (!types.length) {
+        typesEl.innerHTML =
+          '<div class="empty-state"><div class="empty-icon">🛏️</div><h3>No room types found</h3></div>';
+        return;
+      }
+      typesEl.innerHTML = types
+        .map((t) => {
+          const avail = Number(t.available_count || 0);
+          const price =
+            t.min_price === t.max_price
+              ? "KSh " + formatMoney(t.min_price)
+              : "From KSh " + formatMoney(t.min_price);
+          return (
+            '<article class="room-card ' +
+            (avail > 0 ? "available" : "booked") +
+            '">' +
+            '<img src="' +
+            typeImage(t.room_type) +
+            '" alt="' +
+            escapeHtml(t.room_type) +
+            '" loading="lazy" onerror="this.src=\'images/hotel-hero-1.jpg\'">' +
+            '<div class="room-card-header">' +
+            "<h3>" +
+            escapeHtml(t.room_type) +
+            "</h3>" +
+            (avail > 0
+              ? '<span class="badge available">' + avail + " free today</span>"
+              : '<span class="badge booked">Fully booked today</span>') +
+            "</div>" +
+            '<div class="room-card-body">' +
+            "<p><strong>Rooms:</strong> " +
+            escapeHtml(t.count) +
+            "</p>" +
+            "<p><strong>Sleeps:</strong> up to " +
+            escapeHtml(t.capacity) +
+            " guest(s)</p>" +
+            '<p><strong>Rate:</strong> <span class="room-price">' +
+            price +
+            "</span> / night</p>" +
+            (t.description
+              ? '<p class="room-desc">' + escapeHtml(t.description) + "</p>"
+              : "") +
+            "</div>" +
+            '<div class="room-card-footer">' +
+            '<a href="#loginSection" class="btn-primary" style="text-decoration:none;display:inline-flex;">Book this type</a>' +
+            "</div>" +
+            "</article>"
+          );
+        })
+        .join("");
+    } else {
+      typesEl.style.display = "none";
+      allEl.style.display = "grid";
+      let rooms = galleryData.rooms.slice();
+      if (q) {
+        rooms = rooms.filter(
+          (r) =>
+            String(r.room_number || "").toLowerCase().includes(q) ||
+            String(r.room_type || "").toLowerCase().includes(q)
+        );
+      }
+      if (!rooms.length) {
+        allEl.innerHTML =
+          '<div class="empty-state"><div class="empty-icon">🛏️</div><h3>No rooms match</h3></div>';
+        return;
+      }
+      allEl.innerHTML = rooms
+        .map((r) => {
+          const st = r.status || "available";
+          return (
+            '<article class="room-card ' +
+            (st === "available" ? "available" : "booked") +
+            '">' +
+            '<img src="' +
+            typeImage(r.room_type) +
+            '" alt="Room ' +
+            escapeHtml(r.room_number) +
+            '" loading="lazy" onerror="this.src=\'images/hotel-hero-1.jpg\'">' +
+            '<div class="room-card-header">' +
+            "<h3>Room " +
+            escapeHtml(r.room_number) +
+            "</h3>" +
+            statusBadge(st) +
+            "</div>" +
+            '<div class="room-card-body">' +
+            "<p><strong>Type:</strong> " +
+            escapeHtml(r.room_type) +
+            "</p>" +
+            "<p><strong>Capacity:</strong> " +
+            escapeHtml(r.capacity) +
+            " guest(s)</p>" +
+            '<p><strong>Rate:</strong> <span class="room-price">KSh ' +
+            formatMoney(r.price) +
+            "</span> / night</p>" +
+            (r.description
+              ? '<p class="room-desc">' + escapeHtml(r.description) + "</p>"
+              : "") +
+            "</div>" +
+            '<div class="room-card-footer">' +
+            (st === "available"
+              ? '<a href="#loginSection" class="btn-primary" style="text-decoration:none;display:inline-flex;">Sign in to book</a>'
+              : '<button type="button" class="btn-secondary" disabled>Not available today</button>') +
+            "</div>" +
+            "</article>"
+          );
+        })
+        .join("");
+    }
+  }
+
+  document.querySelectorAll(".gallery-tab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".gallery-tab").forEach((b) => {
+        b.classList.remove("active", "btn-primary");
+        b.classList.add("btn-secondary");
+      });
+      btn.classList.add("active", "btn-primary");
+      btn.classList.remove("btn-secondary");
+      currentView = btn.dataset.view || "types";
+      renderGallery();
+    });
+  });
+
+  document.getElementById("gallerySearch")?.addEventListener("input", renderGallery);
+
+  loadGallery();
+
+  // ----- Session redirect -----
+  async function checkExistingSession() {
+    try {
+      const data = await apiFetch("session.php");
+      const sessBoot = unwrapData(data) || {};
+      if (sessBoot.csrf_token && typeof setCsrfToken === "function") setCsrfToken(sessBoot.csrf_token);
+      const session = unwrapData(data) || {};
+      if (session.authenticated && session.user) {
+        if (session.user.role === "admin") {
+          window.location.href = "admin.html";
+        } else {
+          // Stay on homepage so they can still browse; optional auto-redirect:
+          // window.location.href = "user.html";
+        }
+      }
+    } catch (e) {}
+  }
+  checkExistingSession();
+
+  // ----- Login -----
+  document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const password = document.getElementById("loginPassword").value;
+    const loginAs = document.querySelector('input[name="loginAs"]:checked')?.value;
+    const btn = document.getElementById("loginButton");
+    const msg = document.getElementById("loginMessage");
+
+    if (!email || !password || !loginAs) {
+      msg.textContent = "Please complete all fields.";
+      msg.className = "message error";
+      msg.style.display = "block";
+      return;
+    }
+
+    try {
+      setLoading(true);
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+
+      const result = await apiFetch("login.php", {
+        method: "POST",
+        body: JSON.stringify({ email, password, login_as: loginAs })
+      });
+
+      msg.textContent = result.message || "Login successful.";
+      msg.className = "message success";
+      msg.style.display = "block";
+
+      const payload = unwrapData(result) || result.data || {};
+      if (payload.csrf_token && typeof setCsrfToken === "function") setCsrfToken(payload.csrf_token);
+      const user = payload.user || result.data?.user;
+      setTimeout(() => {
+        if (user?.role === "admin") {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "user.html";
+        }
+      }, 600);
+    } catch (err) {
+      msg.textContent = err.message || "Login failed.";
+      msg.className = "message error";
+      msg.style.display = "block";
+    } finally {
+      setLoading(false);
+      btn.disabled = false;
+      btn.textContent = "Login";
+    }
+  });
+})();
+</script>
+  <script src="js/pwa.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#243746">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Heywood Hotel">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <title>My Stay – Heywood's Hotel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="user-app">
+
+<header class="main-header">
+  <div class="header-content">
+    <div class="brand">
+      <div class="brand-icon">🏨</div>
+      <div>
+        <h1>Heywood's Hotel</h1>
+        <p id="welcomeMessage">Welcome</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="admin-badge" id="userBadge">Guest</span>
+      <button type="button" id="logoutButton" class="btn btn-danger">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="dashboard-container">
+
+  <!-- Profile summary -->
+  <section class="profile-summary">
+    <div class="profile-card">
+      <div class="profile-card-icon">👤</div>
+      <div>
+        <span>Account</span>
+        <strong id="userName">—</strong>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-card-icon">✉️</div>
+      <div>
+        <span>Email</span>
+        <strong id="userEmail" style="font-size:15px;">—</strong>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-card-icon">📅</div>
+      <div>
+        <span>Active bookings</span>
+        <strong id="myBookingCount">0</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- Find & Book -->
+  <section class="dashboard-card" id="findStaySection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">BOOK YOUR STAY</span>
+        <h2>Find available rooms</h2>
+        <p>Choose your dates to see only rooms free for your entire stay.</p>
+      </div>
+    </div>
+
+    <div class="form-grid availability-bar">
+      <div class="form-group">
+        <label for="searchCheckIn">Check-in</label>
+        <input type="date" id="searchCheckIn" required>
+      </div>
+      <div class="form-group">
+        <label for="searchCheckOut">Check-out</label>
+        <input type="date" id="searchCheckOut" required>
+      </div>
+      <div class="form-group">
+        <label for="filterType">Room type</label>
+        <select id="filterType">
+          <option value="">All types</option>
+          <option value="Single">Single</option>
+          <option value="Double">Double</option>
+          <option value="Twin">Twin</option>
+          <option value="Deluxe">Deluxe</option>
+          <option value="Executive">Executive</option>
+          <option value="Presidential">Presidential</option>
+          <option value="Suite">Suite</option>
+        </select>
+      </div>
+      <div class="form-group" style="display:flex;align-items:flex-end;">
+        <button type="button" class="btn btn-primary btn-large" id="searchAvailabilityBtn" style="width:100%;">
+          🔍 Search availability
+        </button>
+      </div>
+    </div>
+
+    <div id="availabilitySummary" class="message info" style="display:none;margin-top:14px;"></div>
+
+    <div class="search-section" style="margin-top:16px;">
+      <div class="search-wrapper" style="max-width:100%;">
+        <span>🔎</span>
+        <input type="search" id="searchRoom" placeholder="Filter results by room number or type..." autocomplete="off">
+      </div>
+    </div>
+
+    <div id="roomTable" class="room-grid" style="margin-top:18px;"></div>
+  </section>
+
+  <!-- Booking form (slides into focus when a room is selected) -->
+  <section class="dashboard-card" id="bookingSection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">RESERVATION</span>
+        <h2>Complete your booking</h2>
+        <p>Confirm guest details and dates. Price is estimated from the room rate × nights.</p>
+      </div>
+    </div>
+
+    <form id="bookingForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="guestName">Guest name *</label>
+          <input type="text" id="guestName" placeholder="Name on the reservation" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label for="guestPhone">Mobile (SMS updates)</label>
+          <input type="tel" id="guestPhone" placeholder="07XX XXX XXX" autocomplete="tel">
+        </div>
+        <div class="form-group">
+          <label for="roomNumber">Room *</label>
+          <select id="roomNumber" required>
+            <option value="">Select a room from the list above</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="checkIn">Check-in *</label>
+          <input type="date" id="checkIn" required>
+        </div>
+        <div class="form-group">
+          <label for="checkOut">Check-out *</label>
+          <input type="date" id="checkOut" required>
+        </div>
+      </div>
+
+      <div id="bookingEstimate" class="booking-estimate" hidden>
+        <div>
+          <span>Nights</span>
+          <strong id="estNights">—</strong>
+        </div>
+        <div>
+          <span>Rate / night</span>
+          <strong id="estRate">—</strong>
+        </div>
+        <div>
+          <span>Estimated total</span>
+          <strong id="estTotal" class="room-price">—</strong>
+        </div>
+      </div>
+      <p class="estimate-note">Estimate excludes tax. Final invoice is issued at check-in.</p>
+
+      <div class="form-actions" style="margin-top:16px;">
+        <button type="submit" class="btn btn-primary btn-large" id="bookButton">✓ Confirm booking</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- My bookings -->
+  <section class="dashboard-card" id="myBookingsSection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">MY STAYS</span>
+        <h2>Active bookings</h2>
+        <p>View invoices or cancel a reservation that has not started yet.</p>
+      </div>
+    </div>
+
+    <div id="bookingCards" class="booking-cards"></div>
+
+    <div class="table-wrapper" style="margin-top:8px;">
+      <table class="data-table" id="bookingTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Room</th>
+            <th>Dates</th>
+            <th>Stay</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Booking history -->
+  <section class="dashboard-card" id="historySection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">HISTORY</span>
+        <h2>Past stays</h2>
+        <p>Cancelled and completed bookings. You can still open or download invoices.</p>
+      </div>
+    </div>
+    <div id="historyCards" class="booking-cards"></div>
+    <div class="table-wrapper">
+      <table class="data-table" id="historyTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Room</th>
+            <th>Dates</th>
+            <th>Status</th>
+            <th>Stay</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+
+
+  <div id="messageBox" class="message" style="display:none;" role="alert" aria-live="polite"></div>
+</main>
+
+<!-- Invoice Modal -->
+<div id="invoiceModal" class="invoice-modal" aria-hidden="true">
+  <div class="invoice-modal-content">
+    <div class="invoice-modal-header">
+      <h2>Hotel Invoice</h2>
+      <button type="button" id="closeInvoiceButton" class="invoice-close" aria-label="Close">&times;</button>
+    </div>
+    <div id="invoiceLoading" class="invoice-loading">
+      <div class="invoice-spinner"></div>
+      <p>Generating invoice...</p>
+    </div>
+    <div id="invoiceError" class="invoice-error" hidden>Unable to generate invoice.</div>
+    <div id="invoiceContent" class="invoice-content" hidden>
+      <div class="invoice-top">
+        <div class="invoice-brand">
+          <div class="invoice-logo">🏨</div>
+          <div>
+            <h1 style="font-size:20px;margin:0;">Heywood's Hotel</h1>
+            <p style="margin:0;color:#718096;font-size:13px;">Room Reservation</p>
+          </div>
+        </div>
+        <div class="invoice-number">
+          <span>INVOICE</span>
+          <strong id="invoiceNumber">—</strong>
+          <small id="invoiceDate">—</small>
+        </div>
+      </div>
+      <div class="invoice-info-grid">
+        <div class="invoice-info-box">
+          <h3>Guest</h3>
+          <p><strong>Name:</strong> <span id="invoiceGuestName">—</span></p>
+        </div>
+        <div class="invoice-info-box">
+          <h3>Booking</h3>
+          <p><strong>ID:</strong> <span id="invoiceBookingId">—</span></p>
+          <p><strong>Status:</strong> <span id="invoiceBookingStatus">—</span></p>
+        </div>
+      </div>
+      <div class="invoice-section">
+        <h3>Stay details</h3>
+        <div class="invoice-stay-grid">
+          <div><span>Room</span><strong id="invoiceRoomNumber">—</strong></div>
+          <div><span>Type</span><strong id="invoiceRoomType">—</strong></div>
+          <div><span>Check-in</span><strong id="invoiceCheckIn">—</strong></div>
+          <div><span>Check-out</span><strong id="invoiceCheckOut">—</strong></div>
+          <div><span>Nights</span><strong id="invoiceNights">—</strong></div>
+        </div>
+      </div>
+      <div class="invoice-section" style="margin-top:20px;">
+        <h3>Billing</h3>
+        <table class="invoice-table">
+          <thead>
+            <tr><th>Description</th><th>Rate</th><th>Nights</th><th>Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="invoiceDescription">Room</td>
+              <td id="invoiceRate">KSh 0</td>
+              <td id="invoiceTableNights">0</td>
+              <td id="invoiceSubtotal">KSh 0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="invoice-total-area">
+        <div class="invoice-total-row"><span>Subtotal</span><strong id="invoiceSubtotalTotal">KSh 0</strong></div>
+        <div class="invoice-total-row"><span>Tax (<span id="invoiceTaxRate">0</span>%)</span><strong id="invoiceTax">KSh 0</strong></div>
+        <div class="invoice-total-row invoice-grand-total"><span>Total</span><strong id="invoiceTotal">KSh 0</strong></div>
+      </div>
+      <div class="invoice-footer" style="margin-top:24px;text-align:center;color:#718096;font-size:13px;">
+        <p>Thank you for choosing Heywood's Hotel.</p>
+      </div>
+    </div>
+    <div id="invoiceActions" class="invoice-actions" hidden>
+      <button type="button" id="printInvoiceButton" class="btn-primary">🖨️ Print</button>
+      <button type="button" id="downloadInvoicePdfBtn" class="btn-secondary">⬇️ Open PDF</button>
+      <button type="button" id="closeInvoiceButtonBottom" class="btn-secondary">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="loading" class="loading-overlay" style="display:none;" aria-hidden="true">
+  <div class="loader"></div>
+  <p>Please wait...</p>
+</div>
+
+<footer class="main-footer">
+  <p>Heywood's Hotel &copy; 2026 · Guest portal</p>
+</footer>
+
+<script src="js/utils.js"></script>
+<script src="js/user.js"></script>
+  <script src="js/pwa.js" defer></script>
+</body>
+</html>

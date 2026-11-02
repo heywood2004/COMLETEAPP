@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#243746">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Heywood Hotel">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <title>Create Account – Heywood's Hotel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="register-page">
+  <section class="register-card">
+    <div class="register-header">
+      <div class="register-icon">🏨</div>
+      <h1>Create Your Account</h1>
+      <p>Join our hotel management system and manage your room reservations with ease.</p>
+    </div>
+
+    <form id="registerForm" class="register-form" novalidate>
+      <div class="register-group">
+        <label for="registerName">Full Name</label>
+        <input type="text" id="registerName" name="name" placeholder="Enter your full name" autocomplete="name" required>
+      </div>
+      <div class="register-group">
+        <label for="registerEmail">Email Address</label>
+        <input type="email" id="registerEmail" name="email" placeholder="Enter your email address" autocomplete="email" required>
+      </div>
+      <div class="register-group">
+        <label for="registerPassword">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="registerPassword" name="password" placeholder="Create a password (min 8 chars)" autocomplete="new-password" required minlength="8">
+          <button type="button" class="password-toggle" id="registerPasswordToggle" aria-label="Show password">👁</button>
+        </div>
+      </div>
+      <div class="register-group">
+        <label for="registerConfirmPassword">Confirm Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="registerConfirmPassword" name="confirm_password" placeholder="Confirm your password" autocomplete="new-password" required minlength="8">
+          <button type="button" class="password-toggle" id="registerConfirmPasswordToggle" aria-label="Show password">👁</button>
+        </div>
+      </div>
+
+      <div id="registerMessage" class="register-message" aria-live="polite"></div>
+
+      <button type="submit" id="registerButton" class="register-button">Create Account</button>
+    </form>
+
+    <div class="register-footer">
+      <p>Already have an account? <a href="index.html">Login here</a></p>
+    </div>
+  </section>
+</main>
+
+<script src="js/utils.js"></script>
+<script src="js/register.js"></script>
+  <script src="js/pwa.js" defer></script>
+</body>
+</html>

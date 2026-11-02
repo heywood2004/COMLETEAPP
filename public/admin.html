@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#243746">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Heywood Hotel">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <title>Admin Dashboard – Heywood's Hotel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="main-header">
+  <div class="header-content">
+    <div class="brand">
+      <div class="brand-icon">🏨</div>
+      <div>
+        <h1>Hotel Management System</h1>
+        <p>Room Reservation &amp; Booking Management</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="admin-badge">Administrator <span id="staffRoleBadge" style="opacity:.85;font-weight:600;"></span></span>
+      <button type="button" id="adminLogout" class="btn btn-danger btn-large">🚪 Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="dashboard-container">
+
+  <section class="admin-intro">
+    <div class="admin-intro-content">
+      <span class="section-label">ADMINISTRATION</span>
+      <h2 id="welcomeMessage">Welcome, Administrator <span id="staffRoleBadge" style="opacity:.85;font-weight:600;"></span></h2>
+      <p>Manage rooms, bookings, users and hotel operations from one place.</p>
+    </div>
+    <div class="admin-profile">
+      <div class="profile-avatar">👤</div>
+      <div>
+        <strong id="adminName">Administrator <span id="staffRoleBadge" style="opacity:.85;font-weight:600;"></span></strong>
+        <span id="adminEmail">admin@example.com</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🏨</div>
+      <div><span>Total Rooms</span><strong id="adminTotalRooms">0</strong></div>
+    </div>
+    <div class="stat-card available-stat">
+      <div class="stat-icon">✓</div>
+      <div><span>Available Rooms</span><strong id="adminAvailableRooms">0</strong></div>
+    </div>
+    <div class="stat-card booked-stat">
+      <div class="stat-icon">🔑</div>
+      <div><span>Booked Rooms</span><strong id="adminBookedRooms">0</strong></div>
+    </div>
+  </section>
+
+  <!-- ADD ROOM -->
+  <section class="dashboard-card">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">ROOM MANAGEMENT</span>
+        <h2 id="roomFormTitle">Add New Room</h2>
+        <p>Create or update a room.</p>
+      </div>
+    </div>
+    <form id="adminAddRoomForm" class="form-grid">
+      <input type="hidden" id="editRoomId" value="">
+      <div class="form-group">
+        <label for="roomNumber">Room Number</label>
+        <input type="text" id="roomNumber" name="room_number" placeholder="e.g. 301" required maxlength="20">
+      </div>
+      <div class="form-group">
+        <label for="roomType">Room Type</label>
+        <select id="roomType" name="room_type" required>
+          <option value="">Select room type</option>
+          <option value="Single">Single</option>
+          <option value="Double">Double</option>
+          <option value="Twin">Twin</option>
+          <option value="Suite">Suite</option>
+          <option value="Deluxe">Deluxe</option>
+          <option value="Executive">Executive</option>
+          <option value="Presidential">Presidential</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="roomPrice">Price per Night (KSh)</label>
+        <input type="number" id="roomPrice" name="price" min="0" step="0.01" placeholder="e.g. 5000" required>
+      </div>
+      <div class="form-group">
+        <label for="roomCapacity">Capacity</label>
+        <input type="number" id="roomCapacity" name="capacity" min="1" placeholder="e.g. 2" required>
+      </div>
+      <div class="form-group full-width">
+        <label for="roomDescription">Description</label>
+        <textarea id="roomDescription" name="description" rows="3" placeholder="Describe the room..."></textarea>
+      </div>
+      <div class="form-actions full-width">
+        <button type="submit" id="addRoomButton" class="btn btn-primary btn-large">➕ Add Room</button>
+        <button type="button" id="cancelEditRoom" class="btn btn-secondary btn-large" style="display:none;">Cancel Edit</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ROOMS -->
+  <section class="dashboard-card">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">ROOM STATUS</span>
+        <h2>Hotel Rooms</h2>
+      </div>
+      <div class="search-wrapper">
+        <span>🔍</span>
+        <input type="search" id="adminSearchRoom" placeholder="Search rooms..." autocomplete="off">
+      </div>
+    </div>
+    <div id="adminRoomContainer" class="room-grid"></div>
+  </section>
+
+  <!-- USERS -->
+  <section class="dashboard-card">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">USER MANAGEMENT</span>
+        <h2>Registered Users</h2>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table" id="usersTable">
+        <thead>
+          <tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Bookings</th><th>Registered</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BOOKINGS -->
+  <section class="dashboard-card">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">BOOKING MANAGEMENT</span>
+        <h2>Active Bookings</h2>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table" id="adminBookingTable">
+        <thead>
+          <tr>
+            <th>Booking ID</th><th>Guest</th><th>Room</th><th>Type</th>
+            <th>Check In</th><th>Check Out</th><th>Account</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CANCEL -->
+  <section class="dashboard-card manage-booking-card">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">BOOKING CONTROL</span>
+        <h2>Manage Booking</h2>
+        <p>Cancel an active booking when necessary.</p>
+      </div>
+    </div>
+    <form id="adminCancelForm" class="manage-booking-form">
+      <div class="form-group">
+        <label for="adminCancelBooking">Select Booking</label>
+        <select id="adminCancelBooking" required><option value="">Select an active booking</option></select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" id="adminCancelButton" class="btn btn-danger btn-large">✕ Cancel Booking</button>
+      </div>
+    </form>
+  </section>
+
+
+
+
+
+  <!-- INVENTORY -->
+  <section class="dashboard-card" id="inventorySection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">INVENTORY</span>
+        <h2>Supplies &amp; Stock</h2>
+        <p>Linked to housekeeping: marking a room Ready or Cleaning auto-consumes setup items. Low stock is highlighted.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary" id="showInvFormBtn">➕ Add Item</button>
+        <button type="button" class="btn btn-secondary" id="refreshInvBtn">🔄 Refresh</button>
+      </div>
+    </div>
+
+    <div id="invLowStockAlert" class="message error" style="display:none;"></div>
+
+    <form id="inventoryForm" class="form-grid" style="display:none;margin-bottom:18px;padding:18px;background:#f8fafc;border-radius:12px;border:1px solid #e5eaf0;">
+      <div class="form-group">
+        <label for="invName">Name *</label>
+        <input type="text" id="invName" required placeholder="e.g. Bath Towel">
+      </div>
+      <div class="form-group">
+        <label for="invCategory">Category</label>
+        <select id="invCategory">
+          <option value="linen">Linen</option>
+          <option value="amenity">Amenity</option>
+          <option value="cleaning">Cleaning</option>
+          <option value="minibar">Minibar</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="invUnit">Unit</label>
+        <input type="text" id="invUnit" value="pcs" placeholder="pcs / bottles">
+      </div>
+      <div class="form-group">
+        <label for="invQty">Opening Qty</label>
+        <input type="number" id="invQty" min="0" step="0.01" value="0">
+      </div>
+      <div class="form-group">
+        <label for="invReorder">Reorder Level</label>
+        <input type="number" id="invReorder" min="0" step="0.01" value="0">
+      </div>
+      <div class="form-group">
+        <label for="invCost">Unit Cost (KES)</label>
+        <input type="number" id="invCost" min="0" step="0.01" value="0">
+      </div>
+      <div class="form-actions full-width">
+        <button type="submit" class="btn btn-primary">Save Item</button>
+        <button type="button" class="btn btn-secondary" id="cancelInvFormBtn">Cancel</button>
+      </div>
+    </form>
+
+    <form id="stockAdjustForm" class="form-grid" style="margin-bottom:18px;padding:16px;background:#eef6ff;border-radius:12px;border:1px solid #c5ddf5;">
+      <div class="form-group">
+        <label for="stockItem">Item *</label>
+        <select id="stockItem" required><option value="">Select item</option></select>
+      </div>
+      <div class="form-group">
+        <label for="stockAction">Action *</label>
+        <select id="stockAction" required>
+          <option value="in">Stock In (+)</option>
+          <option value="out">Stock Out (−)</option>
+          <option value="adjust">Set Absolute Qty</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="stockQty">Quantity *</label>
+        <input type="number" id="stockQty" min="0.01" step="0.01" required>
+      </div>
+      <div class="form-group">
+        <label for="stockNotes">Notes</label>
+        <input type="text" id="stockNotes" placeholder="Optional">
+      </div>
+      <div class="form-actions full-width">
+        <button type="submit" class="btn btn-primary">Update Stock</button>
+      </div>
+    </form>
+
+    <div class="table-wrapper">
+      <table class="data-table" id="inventoryTable">
+        <thead>
+          <tr>
+            <th>Name</th><th>Category</th><th>Qty</th><th>Unit</th>
+            <th>Reorder At</th><th>Unit Cost</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 style="margin:22px 0 10px;">Recent Inventory Movements</h3>
+    <div class="table-wrapper">
+      <table class="data-table" id="invTxnTable">
+        <thead>
+          <tr>
+            <th>When</th><th>Item</th><th>Type</th><th>Qty</th>
+            <th>Balance</th><th>Room</th><th>By</th><th>Notes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- HOUSEKEEPING -->
+  <section class="dashboard-card" id="housekeepingSection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">HOUSEKEEPING</span>
+        <h2>Room Status Board</h2>
+        <p>Track cleaning status. Out-of-order rooms cannot be booked. Checkout auto-marks rooms Dirty.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary hk-filter active" data-hk="">All</button>
+        <button type="button" class="btn btn-secondary hk-filter" data-hk="ready">Ready</button>
+        <button type="button" class="btn btn-secondary hk-filter" data-hk="dirty">Dirty</button>
+        <button type="button" class="btn btn-secondary hk-filter" data-hk="cleaning">Cleaning</button>
+        <button type="button" class="btn btn-secondary hk-filter" data-hk="out_of_order">Out of Order</button>
+        <button type="button" class="btn btn-primary" id="refreshHkBtn">🔄 Refresh</button>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:18px;">
+      <div class="stat-card available-stat"><div class="stat-icon">✓</div><div><span>Ready</span><strong id="hkReady">0</strong></div></div>
+      <div class="stat-card booked-stat"><div class="stat-icon">🧹</div><div><span>Dirty</span><strong id="hkDirty">0</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">🧼</div><div><span>Cleaning</span><strong id="hkCleaning">0</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">🚫</div><div><span>Out of Order</span><strong id="hkOoo">0</strong></div></div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table" id="housekeepingTable">
+        <thead>
+          <tr>
+            <th>Room</th><th>Type</th><th>Occupancy</th><th>Guest</th>
+            <th>HK Status</th><th>Notes</th><th>Updated</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- WALK-IN BOOKING -->
+  <section class="dashboard-card" id="walkInSection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">FRONT DESK</span>
+        <h2>Walk-in Booking</h2>
+        <p>Create a booking for a guest without an online account. Optionally check them in immediately.</p>
+      </div>
+    </div>
+    <form id="walkInForm" class="form-grid">
+      <div class="form-group">
+        <label for="walkInGuestName">Guest Name *</label>
+        <input type="text" id="walkInGuestName" required placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label for="walkInPhone">Phone</label>
+        <input type="tel" id="walkInPhone" placeholder="07XX XXX XXX">
+      </div>
+      <div class="form-group">
+        <label for="walkInEmail">Email</label>
+        <input type="email" id="walkInEmail" placeholder="Optional email">
+      </div>
+      <div class="form-group">
+        <label for="walkInIdNumber">ID / Passport</label>
+        <input type="text" id="walkInIdNumber" placeholder="Optional">
+      </div>
+      <div class="form-group">
+        <label for="walkInRoom">Room *</label>
+        <select id="walkInRoom" required>
+          <option value="">Select available room</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="walkInCheckIn">Check In *</label>
+        <input type="date" id="walkInCheckIn" required>
+      </div>
+      <div class="form-group">
+        <label for="walkInCheckOut">Check Out *</label>
+        <input type="date" id="walkInCheckOut" required>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:28px;">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:600;margin:0;">
+          <input type="checkbox" id="walkInAutoCheckin" style="width:auto;"> Check in immediately
+        </label>
+      </div>
+      <div class="form-group full-width">
+        <label for="walkInNotes">Notes</label>
+        <textarea id="walkInNotes" rows="2" placeholder="Special requests / notes"></textarea>
+      </div>
+      <div class="form-actions full-width">
+        <button type="submit" class="btn btn-primary btn-large" id="walkInSubmitBtn">📝 Create Walk-in Booking</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- REPORTS -->
+  <section class="dashboard-card" id="reportsSection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">ANALYTICS</span>
+        <h2>Occupancy &amp; Revenue Report</h2>
+        <p>Snapshot of hotel performance for a date range.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+        <div class="form-group" style="margin:0;">
+          <label for="reportFrom">From</label>
+          <input type="date" id="reportFrom">
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="reportTo">To</label>
+          <input type="date" id="reportTo">
+        </div>
+        <button type="button" class="btn btn-primary" id="loadReportBtn">Generate</button>
+      </div>
+    </div>
+
+    <div class="stats-grid" id="reportTodayStats">
+      <div class="stat-card"><div class="stat-icon">📊</div><div><span>Occupancy Today</span><strong id="rptOccupancy">0%</strong></div></div>
+      <div class="stat-card available-stat"><div class="stat-icon">🛏</div><div><span>Available Today</span><strong id="rptAvailable">0</strong></div></div>
+      <div class="stat-card booked-stat"><div class="stat-icon">🔑</div><div><span>In-House</span><strong id="rptInHouse">0</strong></div></div>
+    </div>
+
+    <div class="stats-grid" style="margin-top:12px;">
+      <div class="stat-card"><div class="stat-icon">📥</div><div><span>Arrivals Today</span><strong id="rptArrivals">0</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">📤</div><div><span>Departures Today</span><strong id="rptDepartures">0</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">💰</div><div><span>Collected (range)</span><strong id="rptCollected">0</strong></div></div>
+    </div>
+
+    <div class="invoice-info-grid" style="margin-top:18px;">
+      <div class="invoice-info-box">
+        <h3>Period Summary</h3>
+        <p><strong>Bookings created:</strong> <span id="rptBookings">0</span></p>
+        <p><strong>Cancellations:</strong> <span id="rptCancels">0</span></p>
+        <p><strong>Payments:</strong> <span id="rptPayCount">0</span></p>
+        <p><strong>Invoiced total:</strong> KSh <span id="rptInvoiced">0</span></p>
+        <p><strong>Outstanding (all):</strong> KSh <span id="rptOutstanding">0</span></p>
+      </div>
+      <div class="invoice-info-box">
+        <h3>Payments by Method</h3>
+        <div id="rptByMethod"><p style="color:#718096;">No data yet.</p></div>
+      </div>
+    </div>
+
+    <h3 style="margin:20px 0 10px;">Daily Occupancy</h3>
+    <div class="table-wrapper">
+      <table class="data-table" id="rptOccupancyTable">
+        <thead><tr><th>Date</th><th>Booked Rooms</th><th>Occupancy %</th><th>Bar</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 style="margin:20px 0 10px;">Top Room Types (bookings in range)</h3>
+    <div class="table-wrapper">
+      <table class="data-table" id="rptTopTypesTable">
+        <thead><tr><th>Room Type</th><th>Bookings</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- Night Audit -->
+  <section class="dashboard-card" id="nightAuditSection">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">END OF DAY</span>
+        <h2>Night Audit</h2>
+        <p>Arrivals, departures, collections, and open balances for a business date.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+        <div class="form-group" style="margin:0;">
+          <label for="auditDate">Business date</label>
+          <input type="date" id="auditDate">
+        </div>
+        <button type="button" class="btn btn-primary" id="loadNightAuditBtn">Run Audit</button>
+        <button type="button" class="btn btn-secondary" id="printNightAuditBtn">🖨️ Print</button>
+      </div>
+    </div>
+
+    <div class="stats-grid" id="auditSummary">
+      <div class="stat-card"><div class="stat-icon">📊</div><div><span>Occupancy</span><strong id="audOccupancy">—</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">📥</div><div><span>Expected arrivals</span><strong id="audArrivals">—</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">📤</div><div><span>Expected departures</span><strong id="audDepartures">—</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">🔑</div><div><span>In-house</span><strong id="audInHouse">—</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">💰</div><div><span>Collected</span><strong id="audCollected">—</strong></div></div>
+      <div class="stat-card"><div class="stat-icon">⚠️</div><div><span>Open balances</span><strong id="audOpen">—</strong></div></div>
+    </div>
+
+    <div class="invoice-info-grid" style="margin-top:16px;">
+      <div class="invoice-info-box">
+        <h3>Payments by method</h3>
+        <div id="audByMethod"><p style="color:#718096;">Run audit to load.</p></div>
+      </div>
+      <div class="invoice-info-box">
+        <h3>Housekeeping</h3>
+        <div id="audHk"><p style="color:#718096;">—</p></div>
+      </div>
+    </div>
+
+    <h3 style="margin:20px 0 10px;">Arrivals</h3>
+    <div class="table-wrapper">
+      <table class="data-table" id="audArrivalsTable">
+        <thead><tr><th>Booking</th><th>Guest</th><th>Room</th><th>Stay</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <h3 style="margin:20px 0 10px;">Departures</h3>
+    <div class="table-wrapper">
+      <table class="data-table" id="audDeparturesTable">
+        <thead><tr><th>Booking</th><th>Guest</th><th>Room</th><th>Stay</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <h3 style="margin:20px 0 10px;">Open balances</h3>
+    <div class="table-wrapper">
+      <table class="data-table" id="audOpenTable">
+        <thead><tr><th>Invoice</th><th>Guest</th><th>Room</th><th>Total</th><th>Paid</th><th>Balance</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:#718096;margin-top:12px;" id="audMeta"></p>
+  </section>
+
+  <!-- =================================================
+       HOTEL OPERATIONS
+  ================================================== -->
+  <section class="dashboard-card hotel-operations" id="hotelOperations">
+    <div class="section-heading">
+      <div>
+        <span class="section-label">HOTEL OPERATIONS</span>
+        <h2>Front Desk Operations</h2>
+        <p>Manage guests, check-ins, check-outs and payments.</p>
+      </div>
+    </div>
+
+    <!-- Operation stats -->
+    <div class="stats-grid" style="margin-bottom:22px;">
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div><span>Awaiting Check-in</span><strong id="opsAwaitingCheckin">0</strong></div>
+      </div>
+      <div class="stat-card available-stat">
+        <div class="stat-icon">🛏</div>
+        <div><span>Currently In-House</span><strong id="opsInHouse">0</strong></div>
+      </div>
+      <div class="stat-card booked-stat">
+        <div class="stat-icon">👥</div>
+        <div><span>Guest Profiles</span><strong id="opsGuestCount">0</strong></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="ops-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+      <button type="button" class="btn btn-primary ops-tab active" data-tab="checkin">Check-in</button>
+      <button type="button" class="btn btn-secondary ops-tab" data-tab="inhouse">Current Guests</button>
+      <button type="button" class="btn btn-secondary ops-tab" data-tab="checkout">Check-out</button>
+      <button type="button" class="btn btn-secondary ops-tab" data-tab="guests">Guest Profiles</button>
+      <button type="button" class="btn btn-secondary ops-tab" data-tab="billing">Billing &amp; Payments</button>
+    </div>
+
+    <!-- CHECK-IN PANEL -->
+    <div class="ops-panel" id="panel-checkin">
+      <h3 style="margin-bottom:12px;">Today / Upcoming Check-ins</h3>
+      <p style="color:#718096;font-size:14px;margin-bottom:14px;">Active bookings that have not yet checked in.</p>
+      <div class="table-wrapper">
+        <table class="data-table" id="opsCheckinTable">
+          <thead>
+            <tr>
+              <th>Booking</th><th>Guest</th><th>Room</th>
+              <th>Check In</th><th>Check Out</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- IN-HOUSE PANEL -->
+    <div class="ops-panel" id="panel-inhouse" style="display:none;">
+      <h3 style="margin-bottom:12px;">Currently In-House</h3>
+      <div class="table-wrapper">
+        <table class="data-table" id="opsInhouseTable">
+          <thead>
+            <tr>
+              <th>Booking</th><th>Guest</th><th>Room</th>
+              <th>Checked In</th><th>Check Out</th><th>Invoice</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CHECK-OUT PANEL -->
+    <div class="ops-panel" id="panel-checkout" style="display:none;">
+      <h3 style="margin-bottom:12px;">Ready for Check-out</h3>
+      <p style="color:#718096;font-size:14px;margin-bottom:14px;">Guests who are checked in. Checking out finalizes the invoice.</p>
+      <div class="table-wrapper">
+        <table class="data-table" id="opsCheckoutTable">
+          <thead>
+            <tr>
+              <th>Booking</th><th>Guest</th><th>Room</th>
+              <th>Checked In</th><th>Scheduled Out</th><th>Balance</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GUESTS PANEL -->
+    <div class="ops-panel" id="panel-guests" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+        <h3 style="margin:0;">Guest Profiles</h3>
+        <button type="button" class="btn btn-primary" id="showGuestFormBtn">➕ Add Guest</button>
+      </div>
+
+      <form id="guestForm" class="form-grid" style="display:none;margin-bottom:20px;padding:18px;background:#f8fafc;border-radius:12px;border:1px solid #e5eaf0;">
+        <input type="hidden" id="guestId" value="">
+        <div class="form-group">
+          <label for="guestFullName">Full Name *</label>
+          <input type="text" id="guestFullName" required placeholder="Guest full name">
+        </div>
+        <div class="form-group">
+          <label for="guestPhone">Phone</label>
+          <input type="text" id="guestPhone" placeholder="Phone number">
+        </div>
+        <div class="form-group">
+          <label for="guestEmail">Email</label>
+          <input type="email" id="guestEmail" placeholder="Email address">
+        </div>
+        <div class="form-group">
+          <label for="guestIdNumber">ID Number</label>
+          <input type="text" id="guestIdNumber" placeholder="National ID / Passport">
+        </div>
+        <div class="form-group">
+          <label for="guestNationality">Nationality</label>
+          <input type="text" id="guestNationality" placeholder="Nationality">
+        </div>
+        <div class="form-group">
+          <label for="guestAddress">Address</label>
+          <input type="text" id="guestAddress" placeholder="Address">
+        </div>
+        <div class="form-group full-width">
+          <label for="guestNotes">Notes</label>
+          <textarea id="guestNotes" rows="2" placeholder="Optional notes"></textarea>
+        </div>
+        <div class="form-actions full-width">
+          <button type="submit" class="btn btn-primary" id="saveGuestBtn">Save Guest</button>
+          <button type="button" class="btn btn-secondary" id="cancelGuestFormBtn">Cancel</button>
+        </div>
+      </form>
+
+      <div class="table-wrapper">
+        <table class="data-table" id="opsGuestsTable">
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Phone</th><th>Email</th>
+              <th>ID Number</th><th>Bookings</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BILLING PANEL -->
+    <div class="ops-panel" id="panel-billing" style="display:none;">
+      <h3 style="margin-bottom:12px;">Billing &amp; Payments</h3>
+
+      <div id="billingRulesCard" style="margin-bottom:22px;padding:18px;background:#f8fafc;border-radius:12px;border:1px solid #e5eaf0;">
+        <h3 style="margin:0 0 8px;">Automated Billing Rules</h3>
+        <p style="color:#718096;font-size:13px;margin:0 0 14px;">These rules apply automatically on check-in and check-out.</p>
+        <form id="billingRulesForm" class="form-grid">
+          <div class="form-group">
+            <label for="ruleTaxRate">Tax / VAT (%)</label>
+            <input type="number" id="ruleTaxRate" min="0" max="100" step="0.01" value="16">
+          </div>
+          <div class="form-group">
+            <label for="ruleServiceRate">Service Charge (%)</label>
+            <input type="number" id="ruleServiceRate" min="0" max="100" step="0.01" value="0">
+          </div>
+          <div class="form-group">
+            <label for="ruleMinNights">Minimum Nights</label>
+            <input type="number" id="ruleMinNights" min="1" step="1" value="1">
+          </div>
+          <div class="form-group">
+            <label for="ruleEarlyPolicy">Early Checkout Policy</label>
+            <select id="ruleEarlyPolicy">
+              <option value="actual">Charge actual nights stayed</option>
+              <option value="reserved">Charge full reserved nights</option>
+              <option value="minimum">Charge minimum nights only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ruleLateHour">Late Checkout After (hour, 0–23)</label>
+            <input type="number" id="ruleLateHour" min="0" max="23" step="1" value="12">
+          </div>
+          <div class="form-group">
+            <label for="ruleLateFee">Late Checkout Fee (KES)</label>
+            <input type="number" id="ruleLateFee" min="0" step="0.01" value="0">
+          </div>
+          <div class="form-group">
+            <label for="ruleCurrency">Currency</label>
+            <input type="text" id="ruleCurrency" maxlength="3" value="KES">
+          </div>
+          <div class="form-group" style="display:flex;flex-direction:column;gap:8px;justify-content:center;">
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+              <input type="checkbox" id="ruleAutoTax" checked style="width:auto;"> Auto-apply tax
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+              <input type="checkbox" id="ruleAutoService" checked style="width:auto;"> Auto-apply service charge
+            </label>
+          </div>
+          <div class="form-actions full-width">
+            <button type="submit" class="btn btn-primary" id="saveBillingRulesBtn">💾 Save Billing Rules</button>
+          </div>
+        </form>
+      </div>
+
+      <p style="color:#718096;font-size:14px;margin-bottom:14px;">Select an in-house or recent booking to view invoice and record payments.</p>
+
+      <div class="form-group" style="max-width:420px;margin-bottom:18px;">
+        <label for="billingBookingSelect">Select Booking</label>
+        <select id="billingBookingSelect">
+          <option value="">Select booking with invoice</option>
+        </select>
+      </div>
+
+      <div id="billingSummary" style="display:none;margin-bottom:20px;">
+        <div class="invoice-info-grid">
+          <div class="invoice-info-box">
+            <h3>Invoice</h3>
+            <p><strong>Number:</strong> <span id="billInvoiceNumber">—</span></p>
+            <p><strong>Guest:</strong> <span id="billGuestName">—</span></p>
+            <p><strong>Room:</strong> <span id="billRoom">—</span></p>
+            <p><strong>Status:</strong> <span id="billStatus">—</span></p>
+          </div>
+          <div class="invoice-info-box">
+            <h3>Amounts (KES)</h3>
+            <p><strong>Total:</strong> <span id="billTotal">0</span></p>
+            <p><strong>Paid:</strong> <span id="billPaid">0</span></p>
+            <p><strong>Balance:</strong> <span id="billBalance">0</span></p>
+          </div>
+        </div>
+
+        <form id="paymentForm" class="form-grid" style="margin-top:16px;padding:16px;background:#f8fafc;border-radius:12px;">
+          <input type="hidden" id="paymentInvoiceId" value="">
+          <div class="form-group">
+            <label for="paymentAmount">Amount *</label>
+            <input type="number" id="paymentAmount" min="0.01" step="0.01" required placeholder="Amount">
+          </div>
+          <div class="form-group">
+            <label for="paymentMethod">Method *</label>
+            <select id="paymentMethod" required>
+              <option value="cash">Cash</option>
+              <option value="card">Card</option>
+              <option value="mpesa">M-Pesa</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="paymentRef">Reference</label>
+            <input type="text" id="paymentRef" placeholder="Transaction ref (optional)">
+          </div>
+          <div class="form-group">
+            <label for="paymentNotes">Notes</label>
+            <input type="text" id="paymentNotes" placeholder="Notes (optional)">
+          </div>
+          <div class="form-actions full-width">
+            <button type="submit" class="btn btn-primary" id="recordPaymentBtn">💰 Record Payment</button>
+          </div>
+        </form>
+
+        
+        <div id="mpesaStkBox" style="margin-top:16px;padding:16px;background:#e8f5e9;border-radius:12px;border:1px solid #c8e6c9;">
+          <h4 style="margin:0 0 10px;">📱 Pay with M-Pesa (STK Push)</h4>
+          <p style="font-size:13px;color:#2e7d32;margin:0 0 12px;">Guest receives a PIN prompt on their phone. Payment posts automatically when confirmed.</p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="mpesaPhone">Guest M-Pesa Number</label>
+              <input type="tel" id="mpesaPhone" placeholder="07XX XXX XXX" autocomplete="tel">
+            </div>
+            <div class="form-group">
+              <label for="mpesaAmount">Amount (KES)</label>
+              <input type="number" id="mpesaAmount" min="1" step="1" placeholder="Amount">
+            </div>
+            <div class="form-actions full-width">
+              <button type="button" class="btn btn-primary" id="mpesaStkBtn">📲 Send STK Push</button>
+              <button type="button" class="btn btn-secondary" id="mpesaStatusBtn" style="display:none;">🔄 Check Status</button>
+            </div>
+          </div>
+          <p id="mpesaStatusMsg" style="margin-top:10px;font-size:13px;display:none;"></p>
+        </div>
+
+        <h4 style="margin:20px 0 10px;">Payment History</h4>
+        <div class="table-wrapper">
+          <table class="data-table" id="opsPaymentsTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Amount</th><th>Method</th><th>Reference</th><th>Recorded By</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<div id="systemMessage" class="system-message" role="alert"></div>
+<div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+  <div class="loader"></div>
+  <p>Loading...</p>
+</div>
+
+<footer class="main-footer">
+  <p>&copy; 2026 Hotel Management System. All rights reserved.</p>
+</footer>
+
+<script src="js/utils.js"></script>
+<script src="js/admin.js"></script>
+  <script src="js/pwa.js" defer></script>
+</body>
+</html>
